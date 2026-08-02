@@ -1,0 +1,10 @@
+# docker-compose.yml
+services:
+  quark-api:
+    build: .
+    ports:
+      - "8000:80"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
