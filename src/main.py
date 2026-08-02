@@ -121,7 +121,7 @@ def get_messages(
     return messages
 
 @app.get("/topics")
-def get_topics(session: SessionDep): # type: ignore
+def get_topics(session: SessionDep, api_key: APIKeyDep, ): # type: ignore
     query = select(Topic)
     topics = session.exec(query).all()
     return topics

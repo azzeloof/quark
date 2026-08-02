@@ -5,10 +5,10 @@
 We want to have a web form that posts data to a server, but the server in question is on an arbitrary network that we don't own, and cannot forward ports through.
 
 ## Goal
-An intermediate API that accepts POST requests to ingest data, which it stores in a database. A client can request all messages it hasn't seen with a GET request, optionally passing in a "cursor" or index of the last message it's seen.
+An intermediate API that accepts POST requests to ingest arbitrary data, which it stores in a database. A client can request all messages it hasn't seen with a GET request, optionally passing in a "cursor" or index of the last message it's seen.
 
 ## Architecture
-Dockerized python script that uses FastAPI, with a SQLite database (or the option to plug in a SQL database such as Postgres running in a different docker container).
+Dockerized python script that uses FastAPI, with a SQLite database (or the option to plug in a SQL database such as Postgres running in a different docker container, but I haven't added that yet).
 
 ## How to use
 Everything is packaged into a handy-dandy container (i barely know 'er!). Create a .env file with `QUARK_API_KEY = BUNCHOFCHARACTERS`, then run `docker-compose up -d`
@@ -20,7 +20,7 @@ Once it's running, documentation can be found at `http://<ip or domain>:8000/doc
   curl -X POST "http://127.0.0.1:8000/submit?topic_name=pizza" \
      -H "Content-Type: application/json" \
      -H "X-API-Key: my_super_secret_key" \
-     -d '{"message": "i like pasta"}'
+     -d '{"message": "i like pasta", "color", "red", "number_of_meatballs": 6}'
      ```
 
 - To read messages in the 'pizza' topic after message '3':
