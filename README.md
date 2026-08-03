@@ -1,6 +1,12 @@
 # QUARK
 #### QUeued Asynchronous Request Keeper
 
+# QUARK API
+
+[![Lint](https://github.com/azzeloof/quark/actions/workflows/lint.yml/badge.svg)](https://github.com/azzeloof/quark/actions/workflows/lint.yml)
+[![Test](https://github.com/azzeloof/quark/actions/workflows/test.yml/badge.svg)](https://github.com/azzeloof/quark/actions/workflows/test.yml)
+[![Publish](https://github.com/azzeloof/quark/actions/workflows/publish.yml/badge.svg)](https://github.com/azzeloof/quark/actions/workflows/publish.yml)
+
 ## Problem
 We want to have a web form that posts data to a server, but the server in question is on an arbitrary network that we don't own, and cannot forward ports through.
 
@@ -16,17 +22,15 @@ Everything is packaged into a handy-dandy container (i barely know 'er!). Create
 Once it's running, documentation can be found at `http://<ip or domain>:8000/docs`, but in summary:
 
 - To write a new message to the 'pizza' topic:
-  ```
   curl -X POST "http://127.0.0.1:8000/submit?topic_name=pizza" \
      -H "Content-Type: application/json" \
      -H "X-API-Key: my_super_secret_key" \
      -d '{"message": "i like pasta", "color", "red", "number_of_meatballs": 6}'
-     ```
 
 - To read messages in the 'pizza' topic after message '3':
-  ```
   curl -X GET "http://127.0.0.1:8000/messages?topic=pizza&index=3" \
      -H "X-API-Key: my_super_secret_key" 
-     ```
+```raw
 
 To actually receive data, just poll your chosen topic periodically. Each time you poll, keep track of the highest index, so the next time you poll you know how to set the index.
+```
