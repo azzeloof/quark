@@ -45,7 +45,6 @@ def create_db_and_tables():
 
 ###### API Definition ######
 
-app = FastAPI()
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 def validate_api_key(api_key: str = Security(api_key_header)):
@@ -83,6 +82,8 @@ def get_or_create_topic(name: str, session: Session) -> Topic:
 async def lifespan(app: FastAPI):
     create_db_and_tables()
     yield
+
+app = FastAPI(lifespan=lifespan)
 
 @app.post("/submit")
 def queue_message(
