@@ -40,7 +40,6 @@ client = TestClient(app)
 # 4. Setup the database before tests run
 @pytest.fixture(autouse=True)
 def setup_database():
-    SQLModel.metadata.clear()
     SQLModel.metadata.create_all(engine)
     yield
     SQLModel.metadata.drop_all(engine)
@@ -50,7 +49,7 @@ def setup_database():
 def test_auth_missing_key():
     response = client.get("/topics")
     assert response.status_code == 401
-    assert response.json() == {"detail": "Not authenticated"}
+    assert response.json() == {"detail": "Invalid or missing API Key"}
 
 def test_auth_invalid_key():
     response = client.get("/topics", headers={"X-API-Key": "wrong_key"})

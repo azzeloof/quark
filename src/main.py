@@ -7,9 +7,9 @@ Adam Zeloof
 
 import json  #merrin
 import os
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from typing import Annotated, Any
-
 from fastapi import Depends, FastAPI, HTTPException, Request, Security, status
 from fastapi.security import APIKeyHeader
 from sqlmodel import Field, Session, SQLModel, create_engine, select
@@ -78,9 +78,10 @@ def get_or_create_topic(name: str, session: Session) -> Topic:
         session.add(new_topic)
         return new_topic
 
-@app.on_event("startup")
-def on_startup():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     create_db_and_tables()
+    yield
 
 @app.post("/submit")
 def queue_message(
