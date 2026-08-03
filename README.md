@@ -12,7 +12,7 @@ An intermediate API that accepts POST requests to ingest arbitrary data, which i
 
 
 ## Architecture
-Dockerized python script that uses FastAPI, with a SQLite database (or the option to plug in a SQL database such as Postgres running in a different docker container, but I haven't added that yet).
+Dockerized python script that uses FastAPI, with a SQLite database (or the option to plug in a SQL database such as Postgres running in a different docker container, or a different server).
 
 ```mermaid
 graph LR
@@ -64,8 +64,17 @@ graph LR
 
 
 ## How to use
-Everything is packaged into a handy-dandy container (i barely know 'er!). Create a .env file with `QUARK_API_KEY = BUNCHOFCHARACTERS`, then run `docker-compose up -d`
-(You can also change the port mapping in the compose file)
+Everything is packaged into a handy-dandy container (i barely know 'er!). Create a .env file with the following (depending on whether you want to use an external database such as postgres, or a local SQLite db file):
+```
+QUARK_API_KEY="secret_api_key"
+# If you just want to use a local SQLite db, you can exclude the remaining lines. If you're connecting to an existing remote db, keep the URL line below and edit accordingly, but you can get rid of the POSTGRES_USER, POSTGRES_PASSWORD, and POSTGRES_DB lines.
+QUARK_DB_URL="postgresql://myuser:mysecretpassword@db:5432/quarkdb"
+POSTGRES_USER="myuser"
+POSTGRES_PASSWORD="mysecretpassword"
+POSTGRES_DB="quarkdb"
+```
+If you're using a SQLite db, make sure the postgres lines in the docker-compose.yml are commented out. Similarly, there's no need to mount a data volume for the Quark service if you're using a separate db. 
+Then run `docker-compose up -d` 
 Once it's running, documentation can be found at `http://<ip or domain>:8000/docs`, but in summary:
 
 - To write a new message to the 'pizza' topic:

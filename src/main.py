@@ -33,11 +33,13 @@ class Message(SQLModel, table=True):
 
 ###### DB Initialization and Helpers ######
 
-sqlite_file_name = "data/quark_data.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
+db_url = os.environ.get("QUARK_DB_URL") or "sqlite:///data/quark_data.db"
 
-connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, connect_args=connect_args)
+connect_args = {}
+if db_url.startswith("sqlite"):
+    connect_args["check_same_thread"] = False
+    
+engine = create_engine(db_url, connect_args=connect_args)
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
@@ -76,6 +78,7 @@ def get_or_create_topic(name: str, session: Session) -> Topic:
     else:
         new_topic = Topic(name=name, current_sequence_id=0)
         session.add(new_topic)
+        session.flush()
         return new_topic
 
 @asynccontextmanager
