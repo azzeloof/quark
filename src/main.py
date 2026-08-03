@@ -114,7 +114,7 @@ def get_messages(
     query = (
         select(Message)
         .where(Message.topic_name == topic)
-        .where(Message.topic_sequence_id > index)
+        .where(Message.topic_sequence_id >= index)
         .order_by(Message.topic_sequence_id)
     )
     messages = session.exec(query).all()
