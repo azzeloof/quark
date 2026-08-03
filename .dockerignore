@@ -1,0 +1,6 @@
+# .dockerignore
+.env
+data/
+quark_data.db
+__pycache__/
+.git/

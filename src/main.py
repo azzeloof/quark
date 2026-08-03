@@ -5,33 +5,34 @@ Adam Zeloof
 8/2/2026
 """
 
-import json #merrin
+import json  #merrin
 import os
+from datetime import datetime, timezone
+from typing import Annotated, Any
+
 from fastapi import Depends, FastAPI, HTTPException, Request, Security, status
 from fastapi.security import APIKeyHeader
 from sqlmodel import Field, Session, SQLModel, create_engine, select
-from typing import Annotated, Optional, Dict, Any
-from datetime import datetime, timezone
 
 ###### DB Structure ######
 
 class Topic(SQLModel, table=True):
     name: str = Field(primary_key=True)
     current_sequence_id: int = Field(default=0)
-    created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime | None = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class Message(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     topic_name: str = Field(foreign_key="topic.name")
     topic_sequence_id: int = Field()
     payload: str = Field()
-    client_ip: Optional[str] = Field(default=None, index=True)
-    created_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc))
+    client_ip: str | None = Field(default=None, index=True)
+    created_at: datetime | None = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 ###### DB Initialization and Helpers ######
 
-sqlite_file_name = "quark_data.db"
+sqlite_file_name = "data/quark_data.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
 
 connect_args = {"check_same_thread": False}
@@ -83,7 +84,7 @@ def on_startup():
 
 @app.post("/submit")
 def queue_message(
-    payload: Dict[str, Any],
+    payload: dict[str, Any],
     request: Request,
     session: SessionDep, # type: ignore
     api_key: APIKeyDep,
@@ -91,7 +92,8 @@ def queue_message(
 ):
     db_topic = get_or_create_topic(topic, session)
     session.add(db_topic)
-    client_ip = request.headers.get("X-Forwarded-For", request.client.host)
+    raw_ip = request.client.host if request.client else None
+    client_ip = request.headers.get("X-Forwarded-For", raw_ip)
     payload_string = json.dumps(payload)
     new_message = Message(
         topic_name=topic,
@@ -102,7 +104,7 @@ def queue_message(
     session.add(new_message)
     db_topic.current_sequence_id += 1
     session.commit()
-    return {"status": "queued", "topic": topic, "sequence_id": db_topic.current_sequence_id}
+    return {"status": "queued", "topic": topic, "id": db_topic.current_sequence_id}
 
 @app.get("/messages")
 def get_messages(
@@ -110,7 +112,7 @@ def get_messages(
     api_key: APIKeyDep, 
     topic: str = "default",
     index: int = 0,
-    max_index: int = None
+    max_index: int | None = None
 ):
     query = (
         select(Message)
@@ -121,10 +123,23 @@ def get_messages(
     if max_index is not None:
         query = query.where(Message.topic_sequence_id <= max_index)
     messages = session.exec(query).all()
-    return messages
+    formatted_response = []
+    for msg in messages:
+        msg_dict = msg.model_dump(exclude={'id', 'topic_sequence_id'})
+        msg_dict['id'] = msg.topic_sequence_id
+        try:
+            msg_dict['payload'] = json.loads(msg.payload)
+        except json.JSONDecodeError as e:
+            msg_dict['payload'] = {"JSON Error": e, "raw_text": msg.payload}
+        formatted_response.append(msg_dict)
+    return formatted_response
 
 @app.get("/topics")
 def get_topics(session: SessionDep, api_key: APIKeyDep, ): # type: ignore
     query = select(Topic)
     topics = session.exec(query).all()
-    return topics
+    formatted_response = []
+    for topic in topics:
+        topic_dict = topic.model_dump(exclude={'id'})
+        formatted_response.append(topic_dict)
+    return formatted_response
