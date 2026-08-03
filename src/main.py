@@ -119,7 +119,7 @@ def get_messages(
         .order_by(Message.topic_sequence_id)
     )
     if max_index is not None:
-        query.where(Message.topic_sequence_id <= max_index)
+        query = query.where(Message.topic_sequence_id <= max_index)
     messages = session.exec(query).all()
     return messages
 
