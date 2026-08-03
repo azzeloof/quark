@@ -1,8 +1,6 @@
 # QUARK
 #### QUeued Asynchronous Request Keeper
 
-# QUARK API
-
 [![Lint](https://github.com/azzeloof/quark/actions/workflows/lint.yml/badge.svg)](https://github.com/azzeloof/quark/actions/workflows/lint.yml)
 [![Test](https://github.com/azzeloof/quark/actions/workflows/test.yml/badge.svg)](https://github.com/azzeloof/quark/actions/workflows/test.yml)
 [![Publish](https://github.com/azzeloof/quark/actions/workflows/publish.yml/badge.svg)](https://github.com/azzeloof/quark/actions/workflows/publish.yml)
