@@ -106,7 +106,7 @@ def queue_message(
     session.add(new_message)
     db_topic.current_sequence_id += 1
     session.commit()
-    return {"status": "queued", "topic": topic, "id": db_topic.current_sequence_id}
+    return {"status": "queued", "topic": topic, "id": new_message.topic_sequence_id}
 
 @app.get("/messages")
 def get_messages(
