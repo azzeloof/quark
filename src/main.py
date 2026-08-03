@@ -109,7 +109,8 @@ def get_messages(
     session: SessionDep, # type: ignore
     api_key: APIKeyDep, 
     topic: str = "default",
-    index: int = 0
+    index: int = 0,
+    max_index: int = None
 ):
     query = (
         select(Message)
@@ -117,6 +118,8 @@ def get_messages(
         .where(Message.topic_sequence_id >= index)
         .order_by(Message.topic_sequence_id)
     )
+    if max_index is not None:
+        query.where(Message.topic_sequence_id <= max_index)
     messages = session.exec(query).all()
     return messages
 
