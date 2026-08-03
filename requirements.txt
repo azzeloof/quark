@@ -23,6 +23,7 @@ MarkupSafe==3.0.3
 mdurl==0.1.2
 packaging==26.2
 pluggy==1.6.0
+psycopg2-binary==2.9.12
 pydantic==2.13.4
 pydantic-extra-types==2.11.1
 pydantic-settings==2.14.2

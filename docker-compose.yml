@@ -7,4 +7,18 @@ services:
     env_file:
       - .env
     volumes:
+    # If using a SQLite database, otherwise no need to mount this
       - ./data:/app/data
+#   # If you want to use an external db:
+#   db:
+#     image: postgres:17-alpine
+#     container_name: postgres_db
+#     restart: always
+#     ports:
+#       - "5432:5432"
+#     env_file:
+#       - .env
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+# volumes:
+#   postgres_data:
