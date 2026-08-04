@@ -5,7 +5,7 @@
 [![Publish](https://github.com/azzeloof/quark/actions/workflows/publish.yml/badge.svg)](https://github.com/azzeloof/quark/actions/workflows/publish.yml)
 
 ## Problem
-We want to have a web form that posts data to a server, but the server in question is on an arbitrary network that we don't own, and cannot forward ports through. 
+We want to have a web form that posts data to a server, but the server in question is on an arbitrary network that we don't own, and cannot forward ports through - or, we don't need a constant stream of data, and want to just poll the data queue for chunks of data at our leisure.
 
 ## Solution
 An intermediate API that accepts POST requests to ingest arbitrary data, which it stores in a database. A client can request all messages it hasn't seen with a GET request, optionally passing in a "cursor" or index of the last message it's seen. This acts as a "chunked queue" where incoming messages are stored in a queue that is retrieved in ordered chunks. This is useful for applications like Unity where the polling logic can be incorporated into a main loop, where threading is a pain, and when web sockets are infeasible due to firewalls. 
